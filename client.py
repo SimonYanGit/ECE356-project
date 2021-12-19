@@ -45,16 +45,16 @@ def search():
         elif param in rangeMap:
             column = rangeMap[param]
             print("Lower Bound:")
-            low = int(input())
+            low = input()
             print("Upper Bound:")
-            high = int(input())
+            high = input()
             rangeAns[column] = (low,high)
             print(column + " section updated")
         elif param == "11":
             print("Sort by (List Date, Price, Year):")
             category = input().lower()
-            types = set(["ascending", "descending"])
-            print("Ascending or Descending:")
+            types = set(["asc", "desc"])
+            print("asc or desc:")
             type = input().lower()
             if category not in sortBy or type not in types:
                 break
@@ -65,6 +65,19 @@ def search():
             err()
 
     print(stringAns, rangeAns, sortByAns)
+    query = "select * from <variable name for view> where true"
+    for k,v in stringAns.items():
+        query += " and " + k + "=" + "'" + v + "'"
+
+    for k,v in rangeAns.items():
+        query += " and " + k + " between " + v[0] + " and " + v[1]
+    
+    if len(sortByAns):
+        query += " sort by " + sortByAns[0] + " " + sortByAns[1]
+        
+    return query
+
+
 
 def create():
     
@@ -117,17 +130,19 @@ def delete():
     print("Listing ID:")
     listingID = input()
 
-    print(listingID)
+    print("Deleting: " + listingID)
+    query = "DELETE FROM var WHERE listing_id=" + listingID
+    return query
 
 def main():
     # Connection to database and test query
-    db = mysql.connector.connect(
-        host = "marmoset04.shoshin.uwaterloo.ca",
-        user = "zj2yan",
-        passwd = "Simon_123",
-        database = "NHL_356"
-    )
-    cur = db.cursor()
+    # db = mysql.connector.connect(
+    #     host = "marmoset04.shoshin.uwaterloo.ca",
+    #     user = "zj2yan",
+    #     passwd = "Simon_123",
+    #     database = "NHL_356"
+    # )
+    # cur = db.cursor()
 
     # Variables and mappings
     action = ""
@@ -149,7 +164,7 @@ def main():
 
     query = actions[action]()
 
-
+    print(query)
     # Execute query
     # cur.execute(query)
 
