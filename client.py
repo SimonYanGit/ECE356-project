@@ -1,5 +1,11 @@
 import mysql.connector
 
+class Table:
+    def __init__(self, name, req, opt):
+        self.name = name
+        self.req = req
+        self.opt = opt
+
 def err():
     print("Action not recognized, please try again")
 
@@ -41,7 +47,6 @@ def search():
             print("Value:")
             ans = input().lower()
             stringAns[column] = ans
-            print(column + " section updated")
         elif param in rangeMap:
             column = rangeMap[param]
             print("Lower Bound:")
@@ -49,7 +54,6 @@ def search():
             print("Upper Bound:")
             high = input()
             rangeAns[column] = (low,high)
-            print(column + " section updated")
         elif param == "11":
             print("Sort by (List Date, Price, Year):")
             category = input().lower()
@@ -65,7 +69,7 @@ def search():
             err()
 
     print(stringAns, rangeAns, sortByAns)
-    query = "select * from <variable name for view> where true"
+    query = "select * from search_view where true"
     for k,v in stringAns.items():
         query += " and " + k + "=" + "'" + v + "'"
 
@@ -73,27 +77,112 @@ def search():
         query += " and " + k + " between " + v[0] + " and " + v[1]
     
     if len(sortByAns):
-        query += " sort by " + sortByAns[0] + " " + sortByAns[1]
+        query += " order by " + sortByAns[0] + " " + sortByAns[1]
         
     return query
 
 
 
 def create():
-    
-    requiredInfo = ["vin","listing_id","listed_date","city","dealer_zip","franchise_dealer",
-    "is_certified","is_cpo","is_oemcpo","latitude","longitude","daysonmarket",
-    "sp_id","sp_name","seller_rating","savings_amount", "price","owner_count","is_new","description","major_options"
-    ]
-    requiredAns = {}
-    for info in requiredInfo:
-        tmp=""
-        if(info=="listed_date"):
-            tmp=" (YYYY-MM-DD)"
-        print("Value of " + info + tmp+":")
-        requiredAns[info] = input().lower()
 
-    print(requiredAns)
+    # Res holds list of queries
+
+    # Make tables
+    tables = [
+        Table("car", ["vin", "listing_color",], ["main_picture_url", "mileage"]),
+        Table("listing", ["listing_id", "listed_date", "daysonmarket", "price"], ["is_certified", "is_cpo", "is_oemcpo", "savings_amount", "owner_count", "is_new", "description", "major_options"]),
+        Table("list_relation", ["vin", "listing_id"], []),
+        Table("city", ["city"], []),
+        Table("seller", ["sp_id"], ["sp_name", "dealer_zip", "franchise_dealer", "latitude", "longitude", "seller_rating"]),
+        Table("has_relation", ["sp_id", "city"], []),
+        Table("list1_relation", ["listing_id", "sp_id"], []),
+        Table("make", ["make_name"], []),
+        Table("model", ["model_id"], []),
+        Table("manufactures_relation", ["make_name", "model_id"], []),
+        Table("specifies_relation", ["vin", "model_id"], [])
+    ]
+
+    # Gather required info
+    requiredInfo = {
+        "vin": "VIN",
+        "listing_color": "Color",
+        "listing_id": "Listing ID",
+        "listed_date": "Date",
+        "daysonmarket": "Days on Market",
+        "price": "Price",
+        "city": "City",
+        "sp_id": "Dealership User ID",
+        "make_name": "Make Name",
+        "model_id": "Model ID"
+    }
+
+    requiredAns = {}
+    for k,v in requiredInfo.items():
+        ans = ""
+        while True:
+            print(v + ": ")
+            ans = input().lower()
+            if ans:
+                break
+            else:
+                err()
+
+        requiredAns[k] = ans
+
+    # Gather optional info
+    optionalInfo = {
+        "1": "main_picture_url",
+        "2": "mileage",
+        "3": "is_certified",
+        "4": "is_cpo",
+        "5": "is_oemcpo",
+        "6": "savings_amount",
+        "7": "owner_count",
+        "8": "is_new",
+        "9": "description",
+        "10": "major_options",
+        "11": "sp_name",
+        "12": "dealer_zip",
+        "13": "latitude",
+        "14": "longitude",
+        "15": "seller_rating",
+        "16": "franchise_dealer"
+    }
+
+    optionalAns = {}
+    print("Add additional information. Select a number(s) and specify the value of the field. Type \"Create\" to conduct the query")
+    while True:
+        print("1 Picture URL\n2 Mileage\n3 Is certified? (0 or 1)\n4 Is CPO? (0 or 1)\n5 Is OEMCPO? (0 or 1)\n6 Savings amount\n7 Owner Count\n8 Is the car new? (0 or 1)\n9 Description\n10 Major Options\n11 Dealership Username\n12 Dealer ZIP\n13 Latitude\n14 Longitude\n15 Seller Rating\n16 Franchise Dealer? (0 or 1)")
+        param = input()
+        if param == "create":
+            break
+
+        if param in optionalInfo:
+            column = optionalInfo[param]
+            print("Value:")
+            ans = input()
+            optionalAns[column] = ans
+        else:
+            err()
+
+    # Build SQL query
+    query = ""
+    for table in tables:
+        columns = table.req[0]
+        values = "'" + requiredAns[table.req[0]] + "'"
+        for i in range(1,len(table.req)):
+            columns += ", " + table.req[i]
+            values += ", '" + requiredAns[table.req[i]] + "'"
+
+        for opt in table.opt:
+            if opt in optionalAns:
+                columns += ", " + opt
+                values += ", '" + optionalAns[opt] + "'"
+
+        query += "INSERT INTO " + table.name + "(" + columns + ") " + "VALUES (" + values + ")" + ";"
+
+    return query
+    
 
 
 def modify():
@@ -120,7 +209,7 @@ def modify():
         if param in modifyMap:
             column = modifyMap[param]
             print("New Value:")
-            ans = input().lower()
+            ans = input()
             modifyAns[column] = ans
             print(column + " section updated")
         else:
@@ -128,7 +217,6 @@ def modify():
 
     print(listingID, modifyAns)
     
-    ####### NEEDS TO BE CHANGED! #######
     empty = ""
     if not modifyAns:
         return empty
