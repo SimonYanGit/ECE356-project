@@ -223,7 +223,7 @@ def modify():
         else:
             err()
 
-    print(listingID, modifyAns)
+    #print(listingID, modifyAns)
     
     empty = ""
     if not modifyAns:
