@@ -1,5 +1,3 @@
-drop table has_relation;
-
 CREATE TABLE `has_relation` (
   `city` VARCHAR(255) NULL,
   `sp_id` VARCHAR(255) NOT NULL,
