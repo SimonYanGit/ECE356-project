@@ -21,7 +21,8 @@ select
 	combine_fuel_economy,
 	interior_color,
 	power,
-	torque
+	torque,
+	description
 FROM model
 INNER JOIN specifies_relation USING(model_id)
 INNER JOIN car USING(vin)

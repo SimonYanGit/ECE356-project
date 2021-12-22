@@ -86,4 +86,4 @@ create table fullcsv(
 
 -- run this on command line:
 -- LOAD DATA LOCAL INFILE '/Program Files/MySQL/MySQL Server 8.0/uploads/used_cars_data_500k.csv' INTO TABLE fullcsv FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n' IGNORE 1 ROWS;
-LOAD DATA LOCAL INFILE '/var/lib/mysql-files/Group31/used_cars_data_500k.csv' INTO TABLE fullcsv FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n' IGNORE 1 ROWS;
+LOAD DATA INFILE '/var/lib/mysql-files/Group31/used_cars_data_500k.csv' INTO TABLE fullcsv FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n' IGNORE 1 ROWS;

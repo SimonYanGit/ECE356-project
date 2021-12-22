@@ -1,4 +1,5 @@
 import mysql.connector
+import pandas as pd
 
 class Table:
     def __init__(self, name, req, opt, ignore):
@@ -69,7 +70,7 @@ def search():
         else:
             err()
 
-    print(stringAns, rangeAns, sortByAns)
+    # print(stringAns, rangeAns, sortByAns)
     query = "select * from search_view where true"
     for k,v in stringAns.items():
         query += " and " + k + "=" + "'" + v + "'"
@@ -199,17 +200,19 @@ def modify():
     print("Select a number(s) and specify what you want to modify. Type \"Modify\" to modify the listing ID")
 
     modifyMap = {
-        "1" : "city",
-        "2" : "dealer_zip",
-        "3" : "latitude",
-        "4" : "longitude",
-        "5" : "savings_amount",
-        "6" : "price",
-        "7" : "description"
+        "1" : "is_certified",
+        "2" : "is_cpo",
+        "3" : "is_oemcpo",
+        "4" : "savings_amount",
+        "5" : "price",
+        "6" : "owner_count",
+        "7" : "is_new",
+        "8" : "description",
+        "9" : "major_options"
     }
     modifyAns = {}
     while True:
-        print("1 City\n2 Dealer Zip\n3 Latitude\n4 Longitude\n5 Savings Amount\n6 Price\n7 Description")
+        print("1 Certified? (0,1)\n2 Cpo? (0,1)\n3 Oemcpo? (0,1)\n4 Savings Amount\n5 Price\n6 Owner Count\n7 New? (0,1)\n8 Description\n9 Major Options")
         param = input().lower()
         if param == "modify":
             break
@@ -238,7 +241,7 @@ def modify():
         query += k + "=" + "'" + v + "'"
         count += 1
     
-    query += " WHERE listing_id=" + listingID
+    query += " WHERE listing_id=" + listingID +";"
     return query
 
 
@@ -252,13 +255,18 @@ def delete():
 
 def main():
     # Connection to database and test query
-    # db = mysql.connector.connect(
-    #     host = "marmoset04.shoshin.uwaterloo.ca",
-    #     user = "zj2yan",
-    #     passwd = "Simon_123",
-    #     database = "NHL_356"
-    # )
-    # cur = db.cursor()
+    # host = "marmoset04.shoshin.uwaterloo.ca",
+    # user = "zj2yan",
+    # passwd = "Simon_123",
+    # database = "NHL_356"
+    db = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        passwd="dsad",
+        database="cars",
+        autocommit=True
+    )
+    cur = db.cursor()
 
     # Variables and mappings
     action = ""
@@ -272,20 +280,26 @@ def main():
     # Interface
     print("Welcome to Used Car Data")
     while True:
-        print("What do you want to do? (Search, Create, Modify, Delete)")
-        action = input().lower()
-        if action in actions:
-            break
-        err()
+        while True:
+            print("What do you want to do? (Search, Create, Modify, Delete, Exit)")
+            action = input().lower()
+            if action=="exit":
+                return
+            if action in actions:
+                break
+            err()
 
-    query = actions[action]()
+        query = actions[action]()
 
-    print(query)
-    # Execute query
-    # cur.execute(query)
-
-    # for i in cur:
-    #     print(i)
+        # Execute query
+        cur.execute(query)
+        
+        
+        df = pd.DataFrame(cur, columns=cur.column_names)
+        if(df.size==0):
+            print("No results.")            
+        print(df)
+        print("\n\n\n")
 
 
 
