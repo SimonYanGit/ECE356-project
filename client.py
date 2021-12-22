@@ -129,7 +129,21 @@ def modify():
     print(listingID, modifyAns)
     
     ####### NEEDS TO BE CHANGED! #######
-    query = "UPDATE listing SET city='toronto', dealer_zip='L9T', latitude='10.99' WHERE listing_id="+listingID
+    empty = ""
+    if not modifyAns:
+        return empty
+    
+    query = "UPDATE listing SET " 
+
+    count = 0
+    for k,v in modifyAns.items():
+        if count:
+            query += ", "
+        query += k + "=" + "'" + v + "'"
+        count += 1
+    
+    query += " WHERE listing_id=" + listingID
+    return query
 
 
 def delete():
