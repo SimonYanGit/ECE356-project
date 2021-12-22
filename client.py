@@ -1,10 +1,11 @@
 import mysql.connector
 
 class Table:
-    def __init__(self, name, req, opt):
+    def __init__(self, name, req, opt, ignore):
         self.name = name
         self.req = req
         self.opt = opt
+        self.ignore = ignore
 
 def err():
     print("Action not recognized, please try again")
@@ -89,17 +90,17 @@ def create():
 
     # Make tables
     tables = [
-        Table("car", ["vin", "listing_color",], ["main_picture_url", "mileage"]),
-        Table("listing", ["listing_id", "listed_date", "daysonmarket", "price"], ["is_certified", "is_cpo", "is_oemcpo", "savings_amount", "owner_count", "is_new", "description", "major_options"]),
-        Table("list_relation", ["vin", "listing_id"], []),
-        Table("city", ["city"], []),
-        Table("seller", ["sp_id"], ["sp_name", "dealer_zip", "franchise_dealer", "latitude", "longitude", "seller_rating"]),
-        Table("has_relation", ["sp_id", "city"], []),
-        Table("list1_relation", ["listing_id", "sp_id"], []),
-        Table("make", ["make_name"], []),
-        Table("model", ["model_id"], []),
-        Table("manufactures_relation", ["make_name", "model_id"], []),
-        Table("specifies_relation", ["vin", "model_id"], [])
+        Table("car", ["vin", "listing_color",], ["main_picture_url", "mileage"], False),
+        Table("listing", ["listing_id", "listed_date", "daysonmarket", "price"], ["is_certified", "is_cpo", "is_oemcpo", "savings_amount", "owner_count", "is_new", "description", "major_options"], False),
+        Table("list_relation", ["vin", "listing_id"], [], False),
+        Table("city", ["city"], [], True),
+        Table("seller", ["sp_id"], ["sp_name", "dealer_zip", "franchise_dealer", "latitude", "longitude", "seller_rating"], True),
+        Table("has_relation", ["sp_id", "city"], [], True),
+        Table("list1_relation", ["listing_id", "sp_id"], [], False),
+        Table("make", ["make_name"], [], True),
+        Table("model", ["model_id", "model_name", "trimid", "body_type", "year"], [], True),
+        Table("manufactures_relation", ["make_name", "model_id"], [], False),
+        Table("specifies_relation", ["vin", "model_id"], [], False)
     ]
 
     # Gather required info
@@ -113,7 +114,11 @@ def create():
         "city": "City",
         "sp_id": "Dealership User ID",
         "make_name": "Make Name",
-        "model_id": "Model ID"
+        "model_id": "Model ID",
+        "model_name": "Model Name",
+        "trimid": "Trim ID",
+        "body_type": "Body Type",
+        "year": "Year"
     }
 
     requiredAns = {}
@@ -179,7 +184,10 @@ def create():
                 columns += ", " + opt
                 values += ", '" + optionalAns[opt] + "'"
 
-        query += "INSERT INTO " + table.name + "(" + columns + ") " + "VALUES (" + values + ")" + ";"
+        query += "INSERT "
+        if table.ignore:
+            query += "IGNORE "
+        query += "INTO " + table.name + "(" + columns + ") " + "VALUES (" + values + ")" + ";"
 
     return query
     
