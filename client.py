@@ -8,12 +8,12 @@ def search():
     print("Build your search. Select a number(s) and specify what you want to search for. Type \"Search\" to conduct the query")
 
     stringMap = {
-        "1" : "city",
-        "3" : "make_name",
-        "5" : "body_type",
-        "6" : "listing_color",
+        "1" : "lower(city)",
+        "3" : "lower(make_name)",
+        "5" : "lower(body_type)",
+        "6" : "lower(listing_color)",
         "8" : "maximum_seating",
-        "9" : "engine_type",
+        "9" : "lower(engine_type)",
         "10" : "listing_id"
     }
     rangeMap = {
@@ -59,7 +59,7 @@ def search():
             if category not in sortBy or type not in types:
                 break
 
-            sortByAns = (category, type)
+            sortByAns = (sortBy[category], type)
 
         else:
             err()
@@ -87,7 +87,10 @@ def create():
     ]
     requiredAns = {}
     for info in requiredInfo:
-        print("Value of " + info + ":")
+        tmp=""
+        if(info=="listed_date"):
+            tmp=" (YYYY-MM-DD)"
+        print("Value of " + info + tmp+":")
         requiredAns[info] = input().lower()
 
     print(requiredAns)
@@ -124,6 +127,9 @@ def modify():
             err()
 
     print(listingID, modifyAns)
+    
+    ####### NEEDS TO BE CHANGED! #######
+    query = "UPDATE listing SET city='toronto', dealer_zip='L9T', latitude='10.99' WHERE listing_id="+listingID
 
 
 def delete():
@@ -131,7 +137,7 @@ def delete():
     listingID = input()
 
     print("Deleting: " + listingID)
-    query = "DELETE FROM var WHERE listing_id=" + listingID
+    query = "DELETE FROM listing WHERE listing_id=" + listingID
     return query
 
 def main():
