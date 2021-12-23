@@ -255,10 +255,6 @@ def delete():
 
 def main():
     # Connection to database and test query
-    # host = "marmoset04.shoshin.uwaterloo.ca",
-    # user = "zj2yan",
-    # passwd = "Simon_123",
-    # database = "NHL_356"
     db = mysql.connector.connect(
         host="localhost",
         user="root",
