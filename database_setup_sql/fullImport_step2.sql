@@ -52,7 +52,36 @@ INDEX `model_idx` (`body_type` ASC, `year` ASC, `maximum_seating` ASC, `engine_t
 
 INSERT INTO model
 SELECT DISTINCT
-  md5(concat(`model_name`, `trimid`, `trim_name`, `body_type`, `transmission`, `transmission_display`, `wheel_system`, `wheel_system_display`, `back_legroom`, `front_legroom`, `highway_fuel_economy`, `city_fuel_economy`, `combine_fuel_economy`, `fuel_tank_volume`, `fuel_type`, `height`, `length`, `width`, `interior_color`, `exterior_color`, `wheelbase`, `power`, `franchise_make`, `year`, `maximum_seating`, `horsepower`, `engine_type`, `engine_cylinders`, `engine_displacement`, `torque`)) model_id,
+  md5(concat(`model_name`,
+   `trimid`,
+   `trim_name`,
+   `body_type`,
+   `transmission`,
+   `transmission_display`,
+   `wheel_system`,
+   `wheel_system_display`,
+   `back_legroom`,
+   `front_legroom`,
+   `highway_fuel_economy`,
+   `city_fuel_economy`,
+   `combine_fuel_economy`,
+   `fuel_tank_volume`,
+   `fuel_type`,
+   `height`,
+   `length`,
+   `width`,
+   `interior_color`,
+   `exterior_color`,
+   `wheelbase`,
+   `power`,
+   `franchise_make`,
+   `year`,
+   `maximum_seating`,
+   `horsepower`,
+   `engine_type`,
+   `engine_cylinders`,
+   `engine_displacement`,
+   `torque`)) model_id,
   model_name,
   (case when trimid='' then 't0' else trimid end) trimid,
   (case when trim_name='' then 't0' else trim_name end) trim_name,
@@ -200,7 +229,12 @@ CREATE TABLE `seller` (
 -- if no sp_id available - hash the rest of the attributes to create it  
 insert into seller
 SELECT DISTINCT
-	(case when sp_id='' then md5(concat(sp_id, sp_name, dealer_zip, franchise_dealer, latitude, longitude)) else sp_id end) sp_id,
+	(case when sp_id='' then md5(concat(sp_id,
+   sp_name,
+   dealer_zip,
+   franchise_dealer,
+   latitude,
+   longitude)) else sp_id end) sp_id,
 	(case when sp_name='' then null else sp_name end) sp_name,
 	(case when dealer_zip='' then null else dealer_zip end) dealer_zip,
 	(case 
@@ -318,7 +352,36 @@ CREATE TABLE `manufactures_relation` (
 
 
 insert into manufactures_relation
-select distinct make_name, md5(concat(`model_name`, `trimid`, `trim_name`, `body_type`, `transmission`, `transmission_display`, `wheel_system`, `wheel_system_display`, `back_legroom`, `front_legroom`, `highway_fuel_economy`, `city_fuel_economy`, `combine_fuel_economy`, `fuel_tank_volume`, `fuel_type`, `height`, `length`, `width`, `interior_color`, `exterior_color`, `wheelbase`, `power`, `franchise_make`, `year`, `maximum_seating`, `horsepower`, `engine_type`, `engine_cylinders`, `engine_displacement`, `torque`)) model_id from fullcsv;
+select distinct make_name, md5(concat(`model_name`,
+ `trimid`,
+ `trim_name`,
+ `body_type`,
+ `transmission`,
+ `transmission_display`,
+ `wheel_system`,
+ `wheel_system_display`,
+ `back_legroom`,
+ `front_legroom`,
+ `highway_fuel_economy`,
+ `city_fuel_economy`,
+ `combine_fuel_economy`,
+ `fuel_tank_volume`,
+ `fuel_type`,
+ `height`,
+ `length`,
+ `width`,
+ `interior_color`,
+ `exterior_color`,
+ `wheelbase`,
+ `power`,
+ `franchise_make`,
+ `year`,
+ `maximum_seating`,
+ `horsepower`,
+ `engine_type`,
+ `engine_cylinders`,
+ `engine_displacement`,
+ `torque`)) model_id from fullcsv;
 
 
 CREATE TABLE `specifies_relation` (
@@ -339,7 +402,36 @@ CREATE TABLE `specifies_relation` (
     ON UPDATE CASCADE);
 
 insert into specifies_relation
-select vin, md5(concat(`model_name`, `trimid`, `trim_name`, `body_type`, `transmission`, `transmission_display`, `wheel_system`, `wheel_system_display`, `back_legroom`, `front_legroom`, `highway_fuel_economy`, `city_fuel_economy`, `combine_fuel_economy`, `fuel_tank_volume`, `fuel_type`, `height`, `length`, `width`, `interior_color`, `exterior_color`, `wheelbase`, `power`, `franchise_make`, `year`, `maximum_seating`, `horsepower`, `engine_type`, `engine_cylinders`, `engine_displacement`, `torque`)) model_id from fullcsv;
+select vin, md5(concat(`model_name`,
+ `trimid`,
+ `trim_name`,
+ `body_type`,
+ `transmission`,
+ `transmission_display`,
+ `wheel_system`,
+ `wheel_system_display`,
+ `back_legroom`,
+ `front_legroom`,
+ `highway_fuel_economy`,
+ `city_fuel_economy`,
+ `combine_fuel_economy`,
+ `fuel_tank_volume`,
+ `fuel_type`,
+ `height`,
+ `length`,
+ `width`,
+ `interior_color`,
+ `exterior_color`,
+ `wheelbase`,
+ `power`,
+ `franchise_make`,
+ `year`,
+ `maximum_seating`,
+ `horsepower`,
+ `engine_type`,
+ `engine_cylinders`,
+ `engine_displacement`,
+ `torque`)) model_id from fullcsv;
 
 
 CREATE TABLE `has_relation` (
@@ -363,7 +455,12 @@ insert into has_relation
 select city, sp_id from (
 select distinct 
 city, 
-(case when sp_id='' then md5(concat(sp_id, sp_name, dealer_zip, franchise_dealer, latitude, longitude)) else sp_id end) sp_id
+(case when sp_id='' then md5(concat(sp_id,
+ sp_name,
+ dealer_zip,
+ franchise_dealer,
+ latitude,
+ longitude)) else sp_id end) sp_id
 from fullcsv) tmp;
 
 
@@ -386,7 +483,12 @@ CREATE TABLE `list1_relation` (
     ON UPDATE CASCADE);
 
 insert into list1_relation
-select distinct listing_id, (case when sp_id='' then md5(concat(sp_id, sp_name, dealer_zip, franchise_dealer, latitude, longitude)) else sp_id end) sp_id
+select distinct listing_id, (case when sp_id='' then md5(concat(sp_id,
+ sp_name,
+ dealer_zip,
+ franchise_dealer,
+ latitude,
+ longitude)) else sp_id end) sp_id
 from fullcsv;
 
 

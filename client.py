@@ -266,7 +266,6 @@ def main():
         database="cars",
         autocommit=True
     )
-    cur = db.cursor()
 
     # Variables and mappings
     action = ""
@@ -280,6 +279,8 @@ def main():
     # Interface
     print("Welcome to Used Car Data")
     while True:
+        db.reconnect()
+        cur = db.cursor()
         while True:
             print("What do you want to do? (Search, Create, Modify, Delete, Exit)")
             action = input().lower()
@@ -295,10 +296,12 @@ def main():
         cur.execute(query)
         
         
+        
         df = pd.DataFrame(cur, columns=cur.column_names)
         if(df.size==0):
             print("No results.")            
         print(df)
+        cur.close()
         print("\n\n\n")
 
 
